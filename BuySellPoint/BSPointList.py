@@ -18,6 +18,7 @@ LINE_LIST_TYPE = TypeVar('LINE_LIST_TYPE', CBiList, CSegListComm[CBi])
 class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
     def __init__(self, bs_point_config: CBSPointConfig):
         self.lst: List[CBS_Point[LINE_TYPE]] = []
+        self.lst_dict = {}
         self.bsp1_lst: List[CBS_Point[LINE_TYPE]] = []
         self.config = bs_point_config
         self.last_sure_pos = -1
@@ -39,6 +40,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
 
     def cal(self, bi_list: LINE_LIST_TYPE, seg_list: CSegListComm[LINE_TYPE]):
         self.lst = [bsp for bsp in self.lst if bsp.klu.idx <= self.last_sure_pos]
+        self.lst_dict = {bsp.bi.get_end_klu(): bsp for bsp in self.lst}
         self.bsp1_lst = [bsp for bsp in self.bsp1_lst if bsp.klu.idx <= self.last_sure_pos]
 
         self.cal_seg_bs1point(seg_list, bi_list)
@@ -66,11 +68,10 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
         feature_dict=None,
     ):
         is_buy = bi.is_down()
-        for exist_bsp in self.lst:
-            if exist_bsp.klu.idx == bi.get_end_klu().idx:
-                assert exist_bsp.is_buy == is_buy
-                exist_bsp.add_another_bsp_prop(bs_type, relate_bsp1)
-                return
+        if exist_bsp := self.lst_dict.get(bi.get_end_klu().idx):
+            assert exist_bsp.is_buy == is_buy
+            exist_bsp.add_another_bsp_prop(bs_type, relate_bsp1)
+            return
         if bs_type not in self.config.GetBSConfig(is_buy).target_types:
             is_target_bsp = False
 
@@ -86,6 +87,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
             return
         if is_target_bsp:
             self.lst.append(bsp)
+            self.lst_dict[bi.get_end_klu().idx] = bsp
         if bs_type in [BSP_TYPE.T1, BSP_TYPE.T1P]:
             self.bsp1_lst.append(bsp)
 
@@ -190,7 +192,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
             assert bsp2s_bi.seg_idx is not None and bsp2_bi.seg_idx is not None
             if BSP_CONF.max_bsp2s_lv is not None and bias/2 > BSP_CONF.max_bsp2s_lv:
                 break
-            if bsp2s_bi.seg_idx != bsp2_bi.seg_idx and (bsp2s_bi.seg_idx < len(seg_list)-1 or seg_list[bsp2_bi.seg_idx].is_sure):
+            if bsp2s_bi.seg_idx != bsp2_bi.seg_idx and (bsp2s_bi.seg_idx < len(seg_list)-1 or bsp2s_bi.seg_idx - bsp2_bi.seg_idx >= 2 or seg_list[bsp2_bi.seg_idx].is_sure):
                 break
             if bias == 2:
                 if not has_overlap(bsp2_bi._low(), bsp2_bi._high(), bsp2s_bi._low(), bsp2s_bi._high()):
@@ -255,7 +257,8 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
             if next_seg.idx != len(seg_list)-1:
                 return
         elif bsp3_bi.parent_seg.idx != next_seg.idx:
-            return
+            if len(bsp3_bi.parent_seg.bi_list) >= 3:
+                return
         if bsp3_bi.dir == next_seg.dir:
             return
         if bsp3_bi.seg_idx != next_seg_idx and next_seg_idx < len(seg_list)-2:

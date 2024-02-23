@@ -67,7 +67,7 @@ class CChan:
 
         self.do_init()
 
-        if not config.triger_step:
+        if not config.trigger_step:
             for _ in self.load():
                 ...
 
@@ -85,7 +85,7 @@ class CChan:
         obj.kl_misalign_cnt = self.kl_misalign_cnt
         obj.kl_inconsistent_detail = copy.deepcopy(self.kl_inconsistent_detail, memo)
         obj.g_kl_iter = copy.deepcopy(self.g_kl_iter, memo)
-        if hasattr(self, 'kl_datas'):
+        if hasattr(self, 'klu_cache'):
             obj.klu_cache = copy.deepcopy(self.klu_cache, memo)
         if hasattr(self, 'klu_last_t'):
             obj.klu_last_t = copy.deepcopy(self.klu_last_t, memo)
@@ -125,6 +125,8 @@ class CChan:
     def get_next_lv_klu(self, lv_idx):
         if isinstance(lv_idx, int):
             lv_idx = self.lv_list[lv_idx]
+        if len(self.g_kl_iter[lv_idx]) == 0:
+            raise StopIteration
         try:
             return self.g_kl_iter[lv_idx][0].__next__()
         except StopIteration:
@@ -135,10 +137,10 @@ class CChan:
                 raise
 
     def step_load(self):
-        assert self.conf.triger_step
+        assert self.conf.trigger_step
         self.do_init()  # 清空数据，防止再次重跑没有数据
         yielded = False  # 是否曾经返回过结果
-        for idx, snapshot in enumerate(self.load(self.conf.triger_step)):
+        for idx, snapshot in enumerate(self.load(self.conf.trigger_step)):
             if idx < self.conf.skip_step:
                 continue
             yield snapshot

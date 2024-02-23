@@ -1,4 +1,4 @@
-import baostock as bs
+import baostock as bs  # baostock: http://baostock.com/baostock/index.php/%E9%A6%96%E9%A1%B5
 
 from Common.CEnum import AUTYPE, DATA_FIELD, KL_TYPE
 from Common.CTime import CTime

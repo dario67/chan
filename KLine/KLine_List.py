@@ -106,14 +106,12 @@ class CKLine_List:
         self.segzs_list.cal_bi_zs(self.seg_list, self.segseg_list)
         update_zs_in_seg(self.seg_list, self.segseg_list, self.segzs_list)  # 计算segseg的zs_lst，以及中枢的bi_in, bi_out
 
-        self.update_klc_in_bi()  # 计算每一笔里面的 klc列表
-
         # 计算买卖点
         self.seg_bs_point_lst.cal(self.seg_list, self.segseg_list)  # 线段线段买卖点
         self.bs_point_lst.cal(self.bi_list, self.seg_list)  # 再算笔买卖点
 
     def need_cal_step_by_step(self):
-        return self.config.triger_step
+        return self.config.trigger_step
 
     def add_single_klu(self, klu: CKLine_Unit):
         klu.set_metric(self.metric_model_lst)
@@ -134,10 +132,6 @@ class CKLine_List:
         for klc in self.lst[klc_begin_idx:]:
             yield from klc.lst
 
-    def update_klc_in_bi(self):
-        for bi in self.bi_list:
-            bi.set_klc_lst(self[bi.begin_klc.idx:bi.end_klc.idx+1])
-
 
 def cal_seg(bi_list, seg_list):
     seg_list.update(bi_list)
@@ -151,9 +145,16 @@ def cal_seg(bi_list, seg_list):
 
 
 def update_zs_in_seg(bi_list, seg_list, zs_list):
-    for seg in seg_list:
+    sure_seg_cnt = 0
+    for seg in seg_list[::-1]:
+        if seg.ele_inside_is_sure:
+            break
+        if seg.is_sure:
+            sure_seg_cnt += 1
         seg.clear_zs_lst()
-        for zs in zs_list:
+        for zs in zs_list[::-1]:
+            if zs.end.idx < seg.start_bi.get_begin_klu().idx:
+                break
             if zs.is_inside(seg):
                 seg.add_zs(zs)
             assert zs.begin_bi.idx > 0
@@ -161,3 +162,7 @@ def update_zs_in_seg(bi_list, seg_list, zs_list):
             if zs.end_bi.idx+1 < len(bi_list):
                 zs.set_bi_out(bi_list[zs.end_bi.idx+1])
             zs.set_bi_lst(list(bi_list[zs.begin_bi.idx:zs.end_bi.idx+1]))
+
+        if sure_seg_cnt > 2:
+            if not seg.ele_inside_is_sure:
+                seg.ele_inside_is_sure = True

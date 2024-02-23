@@ -1,3 +1,5 @@
+import time
+
 from Chan import CChan
 from ChanConfig import CChanConfig
 from Common.CEnum import AUTYPE, DATA_SRC, KL_TYPE
@@ -6,14 +8,14 @@ from Plot.PlotDriver import CPlotDriver
 
 if __name__ == "__main__":
     code = "sz.000001"
-    begin_time = "2018-01-01"
+    begin_time = "2022-01-01"
     end_time = None
     data_src = DATA_SRC.BAO_STOCK
     lv_list = [KL_TYPE.K_DAY]
 
     config = CChanConfig({
         "bi_strict": True,
-        "triger_step": False,
+        "trigger_step": False,
         "skip_step": 0,
         "divergence_rate": float("inf"),
         "bsp2_follow_1": False,
@@ -72,16 +74,19 @@ if __name__ == "__main__":
         autype=AUTYPE.QFQ,
     )
 
-    if not config.triger_step:
+    if not config.trigger_step:
         plot_driver = CPlotDriver(
             chan,
             plot_config=plot_config,
             plot_para=plot_para,
         )
+        print(f'init plot_driver success')
         plot_driver.figure.show()
+        plot_driver.save2img('/Users/paopao/Documents/yy.jpg')
     else:
         CAnimateDriver(
             chan,
             plot_config=plot_config,
             plot_para=plot_para,
         )
+    # time.sleep(60)

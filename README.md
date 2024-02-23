@@ -495,7 +495,7 @@ plot_para = {
     },
 }  # 空格绘图元素详细配置，详见后文
 
-if not config.triger_step:  # 绘制静态图
+if not config.trigger_step:  # 绘制静态图
     plot_driver = CPlotDriver(
         chan,
         plot_config=plot_config,
@@ -567,7 +567,7 @@ else:  # 绘制动画
           - zs：两中枢区间有重叠才合并（默认）
           - peak：两中枢有K线重叠就合并
       - one_bi_zs：是否需要计算只有一笔的中枢（分析趋势时会用到），默认为 False
-      - zs_algo: 中枢算法normal/over_seg（段内中枢和跨段中枢，具体参见[中枢算法](#中枢算法)章节），默认为normal
+      - zs_algo: 中枢算法normal/over_seg/auto（段内中枢/跨段中枢/自动，具体参见[中枢算法](#中枢算法)章节），默认为normal
     - 笔
       - bi_algo: 笔算法，默认为 normal
         - normal: 按缠论笔定义来算
@@ -612,9 +612,9 @@ else:  # 绘制动画
     - cal_kdj: 是否计算kdj指标，默认为False
     - kdj:
         - kdj_cycle: kdj计算周期，默认为9
-    - triger_step：是否回放逐步返回，默认为 False
+    - trigger_step：是否回放逐步返回，默认为 False
         - 用于逐步回放绘图时使用，此时 CChan 会变成一个生成器，每读取一根新K线就会计算一次当前所有指标，返回当前帧指标状况；常用于返回给 CAnimateDriver 绘图
-    - skip_step：triger_step 为 True 时有效，指定跳过前面几根K线，默认为 0；
+    - skip_step：trigger_step 为 True 时有效，指定跳过前面几根K线，默认为 0；
     - kl_data_check：是否需要检验K线数据，检查项包括时间线是否有乱序，大小级别K线是否有缺失；默认为 True
     - max_kl_misalgin_cnt：在次级别找不到K线最大条数，默认为 2（次级别数据有缺失），`kl_data_check` 为 True 时生效
     - max_kl_inconsistent_cnt：天K线以下（包括）子级别和父级别日期不一致最大允许条数（往往是父级别数据有缺失），默认为 5，`kl_data_check` 为 True 时生效
@@ -697,7 +697,7 @@ config = CChanConfig({
     "zs_combine_mode": "zs",
     "bi_strict": True,
     "mean_metrics": [],
-    "triger_step": False,
+    "trigger_step": False,
     "skip_step": 0,
     "seg_algo": "chan",
     "divergence_rate": 0.9,
@@ -949,12 +949,13 @@ CPlotDriver 和 CAnimateDriver 参数，用于控制绘制哪些元素
 中枢算法主要有`zs_algo`参数决定，有两种取值：
 - normal: 段内中枢
 - over_seg: 跨段中枢
+- auto: 对于确定的线段，采用normal算法，不确定部分用over_seg
 
 <img src="./Image/zs_algo.png" />
 
 #### 段内中枢
 中枢满足：
-- 上升线段起始笔为下上下，下降线段起始笔为下上下
+- 上升线段起始笔为下上下，下降线段起始笔为上下上
 - 中枢一定是奇数笔
 - 中枢不跨段（即便后一段为虚段）
 

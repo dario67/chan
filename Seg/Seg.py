@@ -40,6 +40,8 @@ class CSeg(Generic[LINE_TYPE]):
             self.is_sure = False
         self.check()
 
+        self.ele_inside_is_sure = False
+
     def set_seg_idx(self, idx):
         self.seg_idx = idx
 
@@ -58,7 +60,7 @@ class CSeg(Generic[LINE_TYPE]):
         return f"{self.start_bi.idx}->{self.end_bi.idx}: {self.dir}  {self.is_sure}"
 
     def add_zs(self, zs):
-        self.zs_lst.append(zs)
+        self.zs_lst = [zs] + self.zs_lst  # 因为中枢是反序加入的
 
     def cal_klu_slope(self):
         assert self.end_bi.idx >= self.start_bi.idx
