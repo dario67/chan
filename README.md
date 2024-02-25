@@ -525,7 +525,7 @@ else:  # 绘制动画
 - end_time：结束时间，默认为 None（至于 None 怎么理解,也取决于数据源格式）
 - data_src：数据源，框架提供：
     - DATA_SRC.FUTU：富途
-    - DATA_SRC.BAO_STOCK：BaoStock(默认)
+    - DATA_SRC.BAO_STOCK：证券宝 BaoStock(默认)
     - DATA_SRC.CCXT：ccxt
     - DATA_SRC.CSV: csv（具体可以看内部实现）
     - "custom:文件名:类名"：自定义解析器

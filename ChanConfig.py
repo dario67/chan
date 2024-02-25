@@ -17,9 +17,15 @@ from ZS.ZSConfig import CZSConfig
 
 class CChanConfig:
     def __init__(self, conf=None):
+        """
+        主要用于配置计算逻辑
+        :param conf:
+        """
         if conf is None:
             conf = {}
         conf = ConfigWithCheck(conf)
+
+        # 笔配置
         self.bi_conf = CBiConfig(
             bi_algo=conf.get("bi_algo", "normal"),
             is_strict=conf.get("bi_strict", True),
@@ -28,10 +34,12 @@ class CChanConfig:
             bi_end_is_peak=conf.get('bi_end_is_peak', True),
             bi_allow_sub_peak=conf.get("bi_allow_sub_peak", True),
         )
+        # 线段配置
         self.seg_conf = CSegConfig(
             seg_algo=conf.get("seg_algo", "chan"),
             left_method=conf.get("left_seg_method", "peak"),
         )
+        # 中枢配置
         self.zs_conf = CZSConfig(
             need_combine=conf.get("zs_combine", True),
             zs_combine_mode=conf.get("zs_combine_mode", "zs"),
@@ -39,24 +47,57 @@ class CChanConfig:
             zs_algo=conf.get("zs_algo", "normal"),
         )
 
+        # trigger_step 是否回放逐步返回，默认为 False
+        # 用于逐步回放绘图时使用，此时 CChan 会变成一个生成器，每读取一根新K线就会计算一次当前所有指标，返回当前帧指标状况；
+        # 常用于返回给 CAnimateDriver 绘图
         self.trigger_step = conf.get("trigger_step", False)
+        # trigger_step 为 True 时有效，指定跳过前面几根K线，默认为 0；
         self.skip_step = conf.get("skip_step", 0)
 
+        # 是否需要检验K线数据，检查项包括时间线是否有乱序，大小级别K线是否有缺失；默认为 True
         self.kl_data_check = conf.get("kl_data_check", True)
+        # 在次级别找不到K线最大条数，默认为 2（次级别数据有缺失），kl_data_check 为 True 时生效
         self.max_kl_misalgin_cnt = conf.get("max_kl_misalgin_cnt", 2)
+        # 天K线以下（包括）子级别和父级别日期不一致最大允许条数（往往是父级别数据有缺失），默认为 5，kl_data_check 为 True 时生效
         self.max_kl_inconsistent_cnt = conf.get("max_kl_inconsistent_cnt", 5)
+
+        # 如果获取次级别数据失败，自动删除该级别（比如指数数据一般不提供分钟线），默认为 False
         self.auto_skip_illegal_sub_lv = conf.get("auto_skip_illegal_sub_lv", False)
+        # 打印K线不一致的明细，默认为 True
         self.print_warning = conf.get("print_warning", True)
+        # 计算发生错误时打印因为什么时间的K线数据导致的，默认为 False
         self.print_err_time = conf.get("print_err_time", False)
 
+        # 均线计算周期（用于生成特征及绘图时使用），默认为空[] 例子：[5,20]
         self.mean_metrics: List[int] = conf.get("mean_metrics", [])
+
+        # 计算上下轨道线周期，即 T 天内最高/低价格（用于生成特征及绘图时使用），默认为空[]
         self.trend_metrics: List[int] = conf.get("trend_metrics", [])
+
+        # MACD配置：fast: 默认为12，slow: 默认为26，signal: 默认为9
         self.macd_config = conf.get("macd", {"fast": 12, "slow": 26, "signal": 9})
+
+        # 是否计算demark指标，默认为False
         self.cal_demark = conf.get("cal_demark", False)
+        # 是否计算rsi指标，默认为False
         self.cal_rsi = conf.get("cal_rsi", False)
+        # 是否计算kdj指标，默认为False
         self.cal_kdj = conf.get("cal_kdj", False)
+
+        # rsi计算周期，默认为14
         self.rsi_cycle = conf.get("rsi_cycle", 14)
+        # kdj_cycle: kdj计算周期，默认为9
         self.kdj_cycle = conf.get("kdj_cycle", 9)
+        """
+        德马克指标配置
+        demark_len: setup完成时长度，默认为9
+        setup_bias: setup比较偏移量，默认为4
+        countdown_bias: countdown比较偏移量，默认为2
+        max_countdown: 最大countdown数，默认为13
+        tiaokong_st: 序列真实起始位置计算时，如果setup第一根跳空，是否需要取前一根收盘价，默认为True
+        setup_cmp2close: setup计算当前K线的收盘价对比的是setup_bias根K线前的close，如果不是，下跌setup对比的是low，上升对比的是close，默认为True
+        countdown_cmp2close：countdown计算当前K线的收盘价对比的是countdown_bias根K线前的close，如果不是，下跌setup对比的是low，上升对比的是close，默认为True
+        """
         self.demark_config = conf.get("demark", {
             'demark_len': 9,
             'setup_bias': 4,
@@ -66,6 +107,7 @@ class CChanConfig:
             'setup_cmp2close': True,
             'countdown_cmp2close': True,
         })
+        # 布林线参数 N，整数，默认为 20（用于生成特征及绘图时使用）
         self.boll_n = conf.get("boll_n", 20)
 
         self.set_bsp_config(conf)
@@ -103,6 +145,39 @@ class CChanConfig:
         return res
 
     def set_bsp_config(self, conf):
+        """
+        divergence_rate：1类买卖点背驰比例，即离开中枢的笔的 MACD 指标相对于进入中枢的笔，默认为 0.9
+        min_zs_cnt：1类买卖点至少要经历几个中枢，默认为 1
+        bsp1_only_multibi_zs: min_zs_cnt 计算的中枢至少 3 笔（少于 3 笔是因为开启了 one_bi_zs 参数），默认为 True；
+        max_bs2_rate：2类买卖点那一笔回撤最大比例，默认为 0.618
+            注：如果是 1.0，那么相当于允许回测到1类买卖点的位置
+        bs1_peak：1类买卖点位置是否必须是整个中枢最低点，默认为 True
+        macd_algo：MACD指标算法（可自定义）
+            peak：红绿柱最高点（绝对值），默认【线段买卖点不支持】
+            full_area：整根笔对应的MACD的面积【线段买卖点不支持】
+            area：整根笔对应的MACD的面积（只考虑相应红绿柱）【线段买卖点不支持】
+            slope：笔斜率
+            amp：笔的涨跌幅
+            diff：首尾K线对应的MACD柱子高度的差值的绝对值
+            amount：笔上所有K线成交额总和
+            volumn：笔上所有K线成交量总和
+            amount_avg：笔上K线平均成交额
+            volumn_avg：笔上K线平均成交量
+            turnrate_avg：笔上K线平均换手率
+            rsi: 笔上RSI值极值
+        bs_type：关注的买卖点类型，逗号分隔，默认"1,1p,2,2s,3a,3b"
+            1,2：分别表示1，2，3类买卖点
+            2s：类二买卖点
+            1p：盘整背驰1类买卖点
+            3a：中枢出现在1类后面的3类买卖点（3-after）
+            3b：中枢出现在1类前面的3类买卖点（3-before）
+        "bsp2_follow_1"：2类买卖点是否必须跟在1类买卖点后面（用于小转大时1类买卖点因为背驰度不足没生成），默认为 True
+        "bsp3_follow_1"：3类买卖点是否必须跟在1类买卖点后面（用于小转大时1类买卖点因为背驰度不足没生成），默认为 True
+        "bsp3_peak"：3类买卖点突破笔是不是必须突破中枢里面最高/最低的，默认为 False
+        "bsp2s_follow_2": 类2买卖点是否必须跟在2类买卖点后面（2类买卖点可能由于不满足 max_bs2_rate 最大回测比例条件没生成），默认为 False
+        "max_bsp2s_lv": 类2买卖点最大层级（距离2类买卖点的笔的距离/2），默认为None，不做限制
+        "strict_bsp3":3类买卖点对应的中枢必须紧挨着1类买卖点，默认为 False
+        """
         para_dict = {
             "divergence_rate": float("inf"),
             "min_zs_cnt": 1,

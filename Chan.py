@@ -45,7 +45,41 @@ class CChan:
         lv_list=None,
         config=None,
         autype: AUTYPE = AUTYPE.QFQ,
+        extra_kl=None
     ):
+        """
+        :param code: 股票代码，具体格式取决于数据源格式
+        :param begin_time: 开始时间，默认为 None（至于 None 怎么理解,也取决于数据源格式）
+        :param end_time: 结束时间，默认为 None（至于 None 怎么理解,也取决于数据源格式）
+        :param data_src:数据源，框架提供：
+            DATA_SRC.FUTU：富途
+            DATA_SRC.BAO_STOCK：BaoStock(默认)
+            DATA_SRC.CCXT：ccxt
+            DATA_SRC.CSV: csv（具体可以看内部实现）
+            "custom:文件名:类名"：自定义解析器
+            框架默认提供一个 demo 为："custom: OfflineDataAPI.CStockFileReader"
+            自己开发参考下文『自定义开发-数据接入』
+        :param lv_list: K 线级别，必须从大到小，默认为 [KL_TYPE.K_DAY, KL_TYPE.K_60M]，可选：
+            KL_TYPE.K_YEAR（-_-|| 没啥卵用，毕竟全部年线可能就只有一笔。。）
+            KL_TYPE.K_QUARTER（-_-|| 季度线，同样没啥卵用）
+            KL_TYPE.K_MON
+            KL_TYPE.K_WEEK
+            KL_TYPE.K_DAY
+            KL_TYPE.K_60M
+            KL_TYPE.K_30M
+            KL_TYPE.K_15M
+            KL_TYPE.K_5M
+            KL_TYPE.K_3M
+            KL_TYPE.K_1M
+        :param config: CChanConfig 类，缠论元素计算参数配置，参见下文 CChanConfig
+        :param autype: 复权类型，传递给获取数据接口，默认为 AUTYPE.QFQ,即前复权，可选
+            AUTYPE.QFQ
+            AUTYPE.HFQ
+            AUTYPE.NONE
+        :param extra_kl：额外K线，常用于补充 data_src 的数据，比如离线 data_src 只有到昨天为止的数据，今天开仓需要加上今天实时获得的部分K线数据；默认为 None；
+            如果是个列表：每个元素必须为描述 klu 的 CKLine_Unit 类；此时如果 lv_list 参数有多个级别，则会报错
+            如果是个字典，key 是 lv_list 参数里面的每个级别，value 是数组，每个元素是 CKLine_Unit 类
+        """
         if lv_list is None:
             lv_list = [KL_TYPE.K_DAY, KL_TYPE.K_60M]
         check_kltype_order(lv_list)  # lv_list顺序从高到低

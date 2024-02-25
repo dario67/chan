@@ -8,8 +8,10 @@ from Plot.PlotDriver import CPlotDriver
 
 if __name__ == "__main__":
     code = "sz.000001"
-    begin_time = "2022-01-01"
+    code = "sz.000333"
+    begin_time = "2023-01-01"
     end_time = None
+    end_time = "2023-12-01"
     data_src = DATA_SRC.BAO_STOCK
     lv_list = [KL_TYPE.K_DAY]
 
@@ -82,7 +84,7 @@ if __name__ == "__main__":
         )
         print(f'init plot_driver success')
         plot_driver.figure.show()
-        plot_driver.save2img('/Users/paopao/Documents/yy.jpg')
+        plot_driver.save2img(f'/Users/paopao/Documents/{code}.jpg')
     else:
         CAnimateDriver(
             chan,

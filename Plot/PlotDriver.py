@@ -235,6 +235,28 @@ class CPlotDriver:
         return x_range
 
     def DrawElement(self, plot_config: Dict[str, bool], meta: CChanPlotMeta, ax: Axes, lv, plot_para, ax_macd: Optional[Axes], x_limits):
+        """
+        plot_kline：画K线，默认为 False
+        plot_kline_combine：画合并K线，默认为 False
+        plot_bi：画笔，默认为 False
+        plot_seg：画线段，默认为 False
+        plot_eigen：画特征序列（一般调试用），默认为 False
+        plot_zs：画中枢，默认为 False
+        plot_segseg：画线段分段，默认为 False
+        plot_bsp：画理论买卖点，默认为 False
+        plot_cbsp：画自定义策略买卖点位置，默认为 False
+        plot_segzs：画线段中枢，默认为 False
+        plot_segbsp：画线段的理论买卖点，默认为 False
+        plot_macd：画 MACD 图（图片下方额外开一幅图），默认为 False
+        plot_channel：画上下轨道，默认为 False
+        plot_boll：画布林线，默认为 False
+        plot_mean：画均线，默认为 False
+        plot_tradeinfo：绘制配置的额外信息（在另一根 y 轴上），默认为 False
+        ploy_marker: 添加自定义文本标记
+        ploy_demark: 绘制Demark指标
+        ploy_rsi: 绘制rsi指标
+        ploy_kdj: 绘制kdj指标
+        """
         if plot_config.get("plot_kline", False):
             self.draw_klu(meta, ax, **plot_para.get('kl', {}))
         if plot_config.get("plot_kline_combine", False):
