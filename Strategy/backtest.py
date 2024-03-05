@@ -49,7 +49,7 @@ class Backtest:
     def __init__(self, config):
         self.config = config
 
-    def run_backtest(self):
+    def run_backtest(self, plot=False):
         # 根据配置的策略名称执行策略
         strategy_name = self.config.get('strategy')
         strategy_class = self._get_strategy_class(strategy_name)
@@ -72,15 +72,17 @@ class Backtest:
         # 分析回测结果
         self._analyze_backtest_result(strategy.get_result())
 
-        # 画图
-        plot_driver = CPlotDriver(
-            chan,
-            plot_config=plot_config,
-            plot_para=plot_para,
-        )
-        print(f'init plot_driver success')
-        plot_driver.figure.show()
-        plot_driver.save2img(f"/Users/paopao/Documents/chan_plot/{self.config['code']}.jpg")
+        if plot:
+            # 画图
+            plot_driver = CPlotDriver(
+                chan,
+                plot_config=plot_config,
+                plot_para=plot_para,
+            )
+            print(f'init plot_driver success')
+
+            plot_driver.figure.show()
+            plot_driver.save2img(f"/Users/paopao/Documents/chan_plot/{self.config['code']}.jpg")
 
     def _get_strategy_class(self, strategy_name):
         module_name = 'Strategy.' + strategy_name
@@ -94,7 +96,7 @@ class Backtest:
 
     def _analyze_backtest_result(self, result):
         # 分析回测结果的逻辑，生成回测报告
-        print(json.dumps(result, ensure_ascii=False))
+        print(self.config['code'], json.dumps(result, ensure_ascii=False))
 
 
 if __name__ == "__main__":
