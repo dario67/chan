@@ -29,8 +29,8 @@ class CSeg(Generic[LINE_TYPE]):
         self.pre: Optional[Self] = None
         self.next: Optional[Self] = None
 
-        from BuySellPoint.BS_Point import CBS_Point
-        self.bsp: Optional[CBS_Point] = None  # 尾部是不是买卖点
+        from BuySellPoint.BS_Point import CBSPoint
+        self.bsp: Optional[CBSPoint] = None  # 尾部是不是买卖点
 
         self.bi_list: List[LINE_TYPE] = []  # 仅通过self.update_bi_list来更新
         self.reason = reason
@@ -46,6 +46,10 @@ class CSeg(Generic[LINE_TYPE]):
         self.seg_idx = idx
 
     def check(self):
+        """
+        修改算法后需要回测这里，保证稳定
+        :return:
+        """
         if not self.is_sure:
             return
         if self.is_down():

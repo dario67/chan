@@ -9,16 +9,16 @@ class DATA_SRC(Enum):
 
 
 class KL_TYPE(Enum):
-    K_1M = auto()
     K_DAY = auto()
     K_WEEK = auto()
     K_MON = auto()
     K_YEAR = auto()
+    K_1M = auto()
+    K_3M = auto()
     K_5M = auto()
     K_15M = auto()
     K_30M = auto()
     K_60M = auto()
-    K_3M = auto()
     K_QUARTER = auto()
 
 
@@ -115,15 +115,15 @@ class MACD_ALGO(Enum):
     RSI = auto()
 
 
-class DATA_FIELD:
+class DataField:
     FIELD_TIME = "time_key"
-    FIELD_OPEN = "open"
-    FIELD_HIGH = "high"
-    FIELD_LOW = "low"
-    FIELD_CLOSE = "close"
+    FIELD_OPEN = "open"  # 开盘价
+    FIELD_HIGH = "high"  # 最高价
+    FIELD_LOW = "low"  # 最低价
+    FIELD_CLOSE = "close"  # 收盘价
     FIELD_VOLUME = "volume"  # 成交量
     FIELD_TURNOVER = "turnover"  # 成交额
     FIELD_TURNRATE = "turnover_rate"  # 换手率
 
 
-TRADE_INFO_LST = [DATA_FIELD.FIELD_VOLUME, DATA_FIELD.FIELD_TURNOVER, DATA_FIELD.FIELD_TURNRATE]
+TRADE_INFO_LST = [DataField.FIELD_VOLUME, DataField.FIELD_TURNOVER, DataField.FIELD_TURNRATE]

@@ -10,7 +10,10 @@ from .Combine_Item import CCombine_Item
 T = TypeVar('T')
 
 
-class CKLine_Combiner(Generic[T]):
+class CKLineCombiner(Generic[T]):
+    """
+    K线合并器
+    """
     def __init__(self, kl_unit: T, _dir):
         item = CCombine_Item(kl_unit)
         self.__time_begin = item.time_begin

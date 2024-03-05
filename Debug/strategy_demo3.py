@@ -3,7 +3,7 @@ from typing import List
 
 from Chan import CChan
 from ChanConfig import CChanConfig
-from Common.CEnum import AUTYPE, DATA_FIELD, DATA_SRC, KL_TYPE
+from Common.CEnum import AUTYPE, DataField, DATA_SRC, KL_TYPE
 from DataAPI.BaoStockAPI import CBaoStock
 from KLine.KLine_Unit import CKLine_Unit
 
@@ -11,11 +11,11 @@ from KLine.KLine_Unit import CKLine_Unit
 def combine_60m_klu_form_15m(klu_15m_lst: List[CKLine_Unit]) -> CKLine_Unit:
     return CKLine_Unit(
         {
-            DATA_FIELD.FIELD_TIME: klu_15m_lst[-1].time,
-            DATA_FIELD.FIELD_OPEN: klu_15m_lst[0].open,
-            DATA_FIELD.FIELD_CLOSE: klu_15m_lst[-1].close,
-            DATA_FIELD.FIELD_HIGH: max(klu.high for klu in klu_15m_lst),
-            DATA_FIELD.FIELD_LOW: min(klu.low for klu in klu_15m_lst),
+            DataField.FIELD_TIME: klu_15m_lst[-1].time,
+            DataField.FIELD_OPEN: klu_15m_lst[0].open,
+            DataField.FIELD_CLOSE: klu_15m_lst[-1].close,
+            DataField.FIELD_HIGH: max(klu.high for klu in klu_15m_lst),
+            DataField.FIELD_LOW: min(klu.low for klu in klu_15m_lst),
         }
     )
 

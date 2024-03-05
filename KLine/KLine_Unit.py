@@ -1,7 +1,7 @@
 import copy
 from typing import Dict, Optional
 
-from Common.CEnum import DATA_FIELD, TRADE_INFO_LST, TREND_TYPE
+from Common.CEnum import DataField, TRADE_INFO_LST, TREND_TYPE
 from Common.ChanException import CChanException, ErrCode
 from Common.CTime import CTime
 from Math.BOLL import BOLL_Metric, BollModel
@@ -15,14 +15,18 @@ from .TradeInfo import CTradeInfo
 
 
 class CKLine_Unit:
+    """
+    单根K线类
+    """
     def __init__(self, kl_dict, autofix=False):
         # _time, _close, _open, _high, _low, _extra_info={}
-        self.kl_type = None
-        self.time: CTime = kl_dict[DATA_FIELD.FIELD_TIME]
-        self.close = kl_dict[DATA_FIELD.FIELD_CLOSE]
-        self.open = kl_dict[DATA_FIELD.FIELD_OPEN]
-        self.high = kl_dict[DATA_FIELD.FIELD_HIGH]
-        self.low = kl_dict[DATA_FIELD.FIELD_LOW]
+        self.__idx = -1  # 第几根
+        self.kl_type = None  # K线级别
+        self.time: CTime = kl_dict[DataField.FIELD_TIME]
+        self.close = kl_dict[DataField.FIELD_CLOSE]
+        self.open = kl_dict[DataField.FIELD_OPEN]
+        self.high = kl_dict[DataField.FIELD_HIGH]
+        self.low = kl_dict[DataField.FIELD_LOW]
 
         self.check(autofix)
 
@@ -30,11 +34,11 @@ class CKLine_Unit:
 
         self.demark: CDemarkIndex = CDemarkIndex()
 
-        self.sub_kl_list = []  # 次级别KLU列表
-        self.sup_kl: Optional[CKLine_Unit] = None  # 指向更高级别KLU
+        self.sub_kl_list = []  # 次级别KLU列表,获取次级别K线列表，范围在这根K线范围内的
+        self.sup_kl: Optional[CKLine_Unit] = None  # 指向更高级别KLU，父级别K线（CKLine_Unit）
 
         from KLine.KLine import CKLine
-        self.__klc: Optional[CKLine] = None  # 指向KLine
+        self.__klc: Optional[CKLine] = None  # 指向KLine 获取所属的合并K线（即CKLine）变量
 
         # self.macd: Optional[CMACD_item] = None
         # self.boll: Optional[BOLL_Metric] = None
@@ -46,11 +50,11 @@ class CKLine_Unit:
 
     def __deepcopy__(self, memo):
         _dict = {
-            DATA_FIELD.FIELD_TIME: self.time,
-            DATA_FIELD.FIELD_CLOSE: self.close,
-            DATA_FIELD.FIELD_OPEN: self.open,
-            DATA_FIELD.FIELD_HIGH: self.high,
-            DATA_FIELD.FIELD_LOW: self.low,
+            DataField.FIELD_TIME: self.time,
+            DataField.FIELD_CLOSE: self.close,
+            DataField.FIELD_OPEN: self.open,
+            DataField.FIELD_HIGH: self.high,
+            DataField.FIELD_LOW: self.low,
         }
         for metric in TRADE_INFO_LST:
             if metric in self.trade_info.metric:
@@ -85,7 +89,19 @@ class CKLine_Unit:
         self.__idx: int = idx
 
     def __str__(self):
-        return f"{self.idx}:{self.time}/{self.kl_type} open={self.open} close={self.close} high={self.high} low={self.low} {self.trade_info}"
+        return (f'{self.idx}:{self.time} {self.kl_type} open:{self.open} close:{self.close} '
+                f'high:{self.high} low:{self.low} {self.trade_info}')
+
+    def to_dict(self):
+        return {
+            'idx': self.idx,
+            'time': str(self.time),
+            'open': self.open,
+            'close': self.close,
+            'high': self.high,
+            'low': self.low,
+            'trade_info': str(self.trade_info),
+        }
 
     def check(self, autofix=False):
         if self.low > min([self.low, self.open, self.high, self.close]):

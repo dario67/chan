@@ -26,7 +26,7 @@
     - [CZSList-中枢管理类](#czslist-中枢管理类)
       - [CZS：中枢类](#czs中枢类)
     - [CBSPointList-买卖点管理类](#cbspointlist-买卖点管理类)
-      - [CBS\_Point：买卖点类](#cbs_point买卖点类)
+      - [CBSPoint：买卖点类](#cbspoint买卖点类)
   - [数据接入速成班](#数据接入速成班)
     - [CCommonStockApi子类实现](#ccommonstockapi子类实现)
     - [CTime](#ctime)
@@ -298,10 +298,10 @@ CChanConfig里面提供了很多的配置，其中很多人最容易被影响到
 
 
 ### CBSPointList-买卖点管理类
-- lst：List[CBS_Point] 所有的买卖点
+- lst：List[CBSPoint] 所有的买卖点
 
 
-#### CBS_Point：买卖点类
+#### CBSPoint：买卖点类
 成员包括：
 - bi：所属的笔（买卖点一定在某一笔末尾）
 - Klu：所在K线
@@ -339,14 +339,14 @@ item_dict为一个字典：
 
 ```python
 {
-    DATA_FIELD.FIELD_TIME: time,  # 必须是CTime
-    DATA_FIELD.FIELD_OPEN: float(_open),  # 必填
-    DATA_FIELD.FIELD_CLOSE: float(_close),  # 必填
-    DATA_FIELD.FIELD_LOW: float(_low),  # 必填
-    DATA_FIELD.FIELD_HIGH: float(_high),  # 必填
-    DATA_FIELD.FIELD_VOLUME: float(volume),  # 可选
-    DATA_FIELD.FIELD_TURNOVER: float(amount),  # 可选
-    DATA_FIELD.FIELD_TURNRATE: float(turn),  # 可选
+    DataField.FIELD_TIME: time,  # 必须是CTime
+    DataField.FIELD_OPEN: float(_open),  # 必填
+    DataField.FIELD_CLOSE: float(_close),  # 必填
+    DataField.FIELD_LOW: float(_low),  # 必填
+    DataField.FIELD_HIGH: float(_high),  # 必填
+    DataField.FIELD_VOLUME: float(volume),  # 可选
+    DataField.FIELD_TURNOVER: float(amount),  # 可选
+    DataField.FIELD_TURNRATE: float(turn),  # 可选
 }
 ```
 

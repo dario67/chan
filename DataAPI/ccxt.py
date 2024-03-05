@@ -2,7 +2,7 @@ from datetime import datetime
 
 import ccxt
 
-from Common.CEnum import AUTYPE, DATA_FIELD, KL_TYPE
+from Common.CEnum import AUTYPE, DataField, KL_TYPE
 from Common.CTime import CTime
 from Common.func_util import kltype_lt_day, str2float
 from KLine.KLine_Unit import CKLine_Unit
@@ -12,11 +12,11 @@ from .CommonStockAPI import CCommonStockApi
 
 def GetColumnNameFromFieldList(fileds: str):
     _dict = {
-        "time": DATA_FIELD.FIELD_TIME,
-        "open": DATA_FIELD.FIELD_OPEN,
-        "high": DATA_FIELD.FIELD_HIGH,
-        "low": DATA_FIELD.FIELD_LOW,
-        "close": DATA_FIELD.FIELD_CLOSE,
+        "time": DataField.FIELD_TIME,
+        "open": DataField.FIELD_OPEN,
+        "high": DataField.FIELD_HIGH,
+        "low": DataField.FIELD_LOW,
+        "close": DataField.FIELD_CLOSE,
     }
     return [_dict[x] for x in fileds.split(",")]
 

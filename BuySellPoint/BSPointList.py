@@ -8,7 +8,7 @@ from Seg.Seg import CSeg
 from Seg.SegListComm import CSegListComm
 from ZS.ZS import CZS
 
-from .BS_Point import CBS_Point
+from .BS_Point import CBSPoint
 from .BSPointConfig import CBSPointConfig, CPointConfig
 
 LINE_TYPE = TypeVar('LINE_TYPE', CBi, CSeg[CBi])
@@ -17,9 +17,9 @@ LINE_LIST_TYPE = TypeVar('LINE_LIST_TYPE', CBiList, CSegListComm[CBi])
 
 class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
     def __init__(self, bs_point_config: CBSPointConfig):
-        self.lst: List[CBS_Point[LINE_TYPE]] = []
+        self.lst: List[CBSPoint[LINE_TYPE]] = []
         self.lst_dict = {}
-        self.bsp1_lst: List[CBS_Point[LINE_TYPE]] = []
+        self.bsp1_lst: List[CBSPoint[LINE_TYPE]] = []
         self.config = bs_point_config
         self.last_sure_pos = -1
 
@@ -30,12 +30,12 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
         return len(self.lst)
 
     @overload
-    def __getitem__(self, index: int) -> CBS_Point: ...
+    def __getitem__(self, index: int) -> CBSPoint: ...
 
     @overload
-    def __getitem__(self, index: slice) -> List[CBS_Point]: ...
+    def __getitem__(self, index: slice) -> List[CBSPoint]: ...
 
-    def __getitem__(self, index: Union[slice, int]) -> Union[List[CBS_Point], CBS_Point]:
+    def __getitem__(self, index: Union[slice, int]) -> Union[List[CBSPoint], CBSPoint]:
         return self.lst[index]
 
     def cal(self, bi_list: LINE_LIST_TYPE, seg_list: CSegListComm[LINE_TYPE]):
@@ -63,7 +63,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
         self,
         bs_type: BSP_TYPE,
         bi: LINE_TYPE,
-        relate_bsp1: Optional[CBS_Point],
+        relate_bsp1: Optional[CBSPoint],
         is_target_bsp: bool = True,
         feature_dict=None,
     ):
@@ -76,7 +76,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
             is_target_bsp = False
 
         if is_target_bsp or bs_type in [BSP_TYPE.T1, BSP_TYPE.T1P]:
-            bsp = CBS_Point[LINE_TYPE](
+            bsp = CBSPoint[LINE_TYPE](
                 bi=bi,
                 is_buy=is_buy,
                 bs_type=bs_type,
@@ -182,7 +182,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
         bi_list: LINE_LIST_TYPE,
         bsp2_bi: LINE_TYPE,
         break_bi: LINE_TYPE,
-        real_bsp1: Optional[CBS_Point],
+        real_bsp1: Optional[CBSPoint],
         BSP_CONF: CPointConfig,
     ):
         bias = 2
@@ -300,7 +300,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
             self.add_bs(bs_type=BSP_TYPE.T3B, bi=bsp3_bi, relate_bsp1=real_bsp1)  # type: ignore
             break
 
-    def getLastestBspList(self) -> List[CBS_Point[LINE_TYPE]]:
+    def getLastestBspList(self) -> List[CBSPoint[LINE_TYPE]]:
         if len(self.lst) == 0:
             return []
         return sorted(self.lst, key=lambda bsp: bsp.bi.idx, reverse=True)

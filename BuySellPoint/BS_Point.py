@@ -8,12 +8,15 @@ from Seg.Seg import CSeg
 LINE_TYPE = TypeVar('LINE_TYPE', CBi, CSeg)
 
 
-class CBS_Point(Generic[LINE_TYPE]):
-    def __init__(self, bi: LINE_TYPE, is_buy, bs_type: BSP_TYPE, relate_bsp1: Optional['CBS_Point'], feature_dict=None):
-        self.bi: LINE_TYPE = bi
-        self.klu = bi.get_end_klu()
-        self.is_buy = is_buy
-        self.type: List[BSP_TYPE] = [bs_type]
+class CBSPoint(Generic[LINE_TYPE]):
+    """
+    买卖点类
+    """
+    def __init__(self, bi: LINE_TYPE, is_buy, bs_type: BSP_TYPE, relate_bsp1: Optional['CBSPoint'], feature_dict=None):
+        self.bi: LINE_TYPE = bi  # 所属的笔（买卖点一定在某一笔末尾）
+        self.klu = bi.get_end_klu()  # 笔末尾的K线，即买卖点所在K线
+        self.is_buy = is_buy  # True为买点，False为卖点
+        self.type: List[BSP_TYPE] = [bs_type]  # 买卖点类别，是个数组，比如2，3类买卖点是同一个
         self.relate_bsp1 = relate_bsp1
 
         self.bi.bsp = self  # type: ignore

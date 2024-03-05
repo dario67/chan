@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from Common.cache import make_cache
-from Common.CEnum import BI_DIR, BI_TYPE, DATA_FIELD, FX_TYPE, MACD_ALGO
+from Common.CEnum import BI_DIR, BI_TYPE, DataField, FX_TYPE, MACD_ALGO
 from Common.ChanException import CChanException, ErrCode
 from KLine.KLine import CKLine
 from KLine.KLine_Unit import CKLine_Unit
@@ -25,8 +25,8 @@ class CBi:
         from Seg.Seg import CSeg
         self.parent_seg: Optional[CSeg[CBi]] = None  # 在哪个线段里面
 
-        from BuySellPoint.BS_Point import CBS_Point
-        self.bsp: Optional[CBS_Point] = None  # 尾部是不是买卖点
+        from BuySellPoint.BS_Point import CBSPoint
+        self.bsp: Optional[CBSPoint] = None  # 尾部是不是买卖点
 
         self.next: Optional[CBi] = None
         self.pre: Optional[CBi] = None
@@ -192,15 +192,15 @@ class CBi:
         elif macd_algo == MACD_ALGO.AMP:
             return self.Cal_MACD_amp()
         elif macd_algo == MACD_ALGO.AMOUNT:
-            return self.Cal_MACD_trade_metric(DATA_FIELD.FIELD_TURNOVER, cal_avg=False)
+            return self.Cal_MACD_trade_metric(DataField.FIELD_TURNOVER, cal_avg=False)
         elif macd_algo == MACD_ALGO.VOLUMN:
-            return self.Cal_MACD_trade_metric(DATA_FIELD.FIELD_VOLUME, cal_avg=False)
+            return self.Cal_MACD_trade_metric(DataField.FIELD_VOLUME, cal_avg=False)
         elif macd_algo == MACD_ALGO.VOLUMN_AVG:
-            return self.Cal_MACD_trade_metric(DATA_FIELD.FIELD_VOLUME, cal_avg=True)
+            return self.Cal_MACD_trade_metric(DataField.FIELD_VOLUME, cal_avg=True)
         elif macd_algo == MACD_ALGO.AMOUNT_AVG:
-            return self.Cal_MACD_trade_metric(DATA_FIELD.FIELD_TURNOVER, cal_avg=True)
+            return self.Cal_MACD_trade_metric(DataField.FIELD_TURNOVER, cal_avg=True)
         elif macd_algo == MACD_ALGO.TURNRATE_AVG:
-            return self.Cal_MACD_trade_metric(DATA_FIELD.FIELD_TURNRATE, cal_avg=True)
+            return self.Cal_MACD_trade_metric(DataField.FIELD_TURNRATE, cal_avg=True)
         elif macd_algo == MACD_ALGO.RSI:
             return self.Cal_Rsi()
         else:

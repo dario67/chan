@@ -9,7 +9,7 @@ class CTime:
         self.hour = hour
         self.minute = minute
         self.second = second
-        self.auto = auto  # 自适应对天的理解
+        self.auto = auto  # 自适应对天的理解。很奇怪的设计，自动把0点0分的K线改成23点59分，如果是B圈的分钟线，会强行改错，无法继续读入
         self.set_timestamp()  # set self.ts
 
     def __str__(self):

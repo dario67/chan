@@ -1,3 +1,4 @@
+import json
 import time
 
 from Chan import CChan
@@ -37,7 +38,8 @@ if __name__ == "__main__":
         "plot_seg": True,
         "plot_eigen": False,
         "plot_zs": True,
-        "plot_macd": False,
+        # "plot_macd": False,
+        "plot_macd": True,
         "plot_mean": False,
         "plot_channel": False,
         "plot_bsp": True,
@@ -84,11 +86,17 @@ if __name__ == "__main__":
         )
         print(f'init plot_driver success')
         plot_driver.figure.show()
-        plot_driver.save2img(f'/Users/paopao/Documents/{code}.jpg')
+        plot_driver.save2img(f'/Users/paopao/Documents/chan_plot/{code}.jpg')
     else:
         CAnimateDriver(
             chan,
             plot_config=plot_config,
             plot_para=plot_para,
         )
+
+    for k, v in chan.kl_datas.items():
+        print(k)
+        for p in v.bs_point_lst.lst:
+            print(p.is_buy, json.dumps(p.klu.to_dict(), ensure_ascii=False))
+
     # time.sleep(60)

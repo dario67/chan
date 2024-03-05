@@ -1,6 +1,6 @@
 import baostock as bs  # baostock: http://baostock.com/baostock/index.php/%E9%A6%96%E9%A1%B5
 
-from Common.CEnum import AUTYPE, DATA_FIELD, KL_TYPE
+from Common.CEnum import AUTYPE, DataField, KL_TYPE
 from Common.CTime import CTime
 from Common.func_util import kltype_lt_day, str2float
 from KLine.KLine_Unit import CKLine_Unit
@@ -41,15 +41,15 @@ def parse_time_column(inp):
 
 def GetColumnNameFromFieldList(fileds: str):
     _dict = {
-        "time": DATA_FIELD.FIELD_TIME,
-        "date": DATA_FIELD.FIELD_TIME,
-        "open": DATA_FIELD.FIELD_OPEN,
-        "high": DATA_FIELD.FIELD_HIGH,
-        "low": DATA_FIELD.FIELD_LOW,
-        "close": DATA_FIELD.FIELD_CLOSE,
-        "volume": DATA_FIELD.FIELD_VOLUME,
-        "amount": DATA_FIELD.FIELD_TURNOVER,
-        "turn": DATA_FIELD.FIELD_TURNRATE,
+        "time": DataField.FIELD_TIME,
+        "date": DataField.FIELD_TIME,
+        "open": DataField.FIELD_OPEN,
+        "high": DataField.FIELD_HIGH,
+        "low": DataField.FIELD_LOW,
+        "close": DataField.FIELD_CLOSE,
+        "volume": DataField.FIELD_VOLUME,
+        "amount": DataField.FIELD_TURNOVER,
+        "turn": DataField.FIELD_TURNRATE,
     }
     return [_dict[x] for x in fileds.split(",")]
 

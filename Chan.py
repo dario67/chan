@@ -3,7 +3,7 @@ import datetime
 from collections import defaultdict
 from typing import Dict, Iterable, List, Optional, Union
 
-from BuySellPoint.BS_Point import CBS_Point
+from BuySellPoint.BS_Point import CBSPoint
 from ChanConfig import CChanConfig
 from Common.CEnum import AUTYPE, DATA_SRC, KL_TYPE
 from Common.ChanException import CChanException, ErrCode
@@ -14,7 +14,7 @@ from KLine.KLine_List import CKLine_List
 from KLine.KLine_Unit import CKLine_Unit
 
 
-def GetStockAPI(src):
+def get_stock_api(src):
     _dict = {}
     if src == DATA_SRC.BAO_STOCK:
         from DataAPI.BaoStockAPI import CBaoStock
@@ -26,6 +26,7 @@ def GetStockAPI(src):
         from DataAPI.csvAPI import CSV_API
         _dict[DATA_SRC.CSV] = CSV_API
     if src in _dict:
+        print(f'load stock api {src}')
         return _dict[src]
     if src.find("custom:") < 0:
         raise CChanException("load src type error", ErrCode.SRC_DATA_TYPE_ERR)
@@ -218,7 +219,7 @@ class CChan:
         return lv_klu_iter
 
     def load(self, step=False):
-        stockapi_cls = GetStockAPI(self.data_src)
+        stockapi_cls = get_stock_api(self.data_src)
         try:
             stockapi_cls.do_init()
             for lv_idx, klu_iter in enumerate(self.init_lv_klu_iter(stockapi_cls)):
@@ -317,7 +318,7 @@ class CChan:
         else:
             raise CChanException("unspoourt query type", ErrCode.COMMON_ERROR)
 
-    def get_bsp(self, idx=None) -> List[CBS_Point]:
+    def get_bsp(self, idx=None) -> List[CBSPoint]:
         if idx is not None:
             return sorted(self[idx].bs_point_lst.lst, key=lambda x: x.klu.time)
         assert len(self.lv_list) == 1

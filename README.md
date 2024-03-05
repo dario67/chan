@@ -1115,14 +1115,14 @@ create table if not exists {table_name}(
 1. `get_kl_data(self)`：该方法为一个生成器，yield 返回每一根K线信息 `CKLine_Unit(idx, k_type, item_dict)`，其中 item 为：
 ```
 {
-    DATA_FIELD.FIELD_TIME: time,  # 必须是框架实现的CTime类
-    DATA_FIELD.FIELD_OPEN: float(_open),
-    DATA_FIELD.FIELD_CLOSE: float(_close),
-    DATA_FIELD.FIELD_LOW: float(_low),
-    DATA_FIELD.FIELD_HIGH: float(_high),
-    DATA_FIELD.FIELD_VOLUME: float(volume),
-    DATA_FIELD.FIELD_TURNOVER: float(amount),
-    DATA_FIELD.FIELD_TURNRATE: float(turn),
+    DataField.FIELD_TIME: time,  # 必须是框架实现的CTime类
+    DataField.FIELD_OPEN: float(_open),
+    DataField.FIELD_CLOSE: float(_close),
+    DataField.FIELD_LOW: float(_low),
+    DataField.FIELD_HIGH: float(_high),
+    DataField.FIELD_VOLUME: float(volume),
+    DataField.FIELD_TURNOVER: float(amount),
+    DataField.FIELD_TURNRATE: float(turn),
 }
 ```
 
@@ -1194,7 +1194,7 @@ def cal(self, bi_list: CBiList, seg_list: CSegListComm) -> None:
 - `bi_list`：包含所有笔的信息
 - `seg_list`：包含所有线段的信息（内部可以通过 `seg_list[n].zs_lst[i]` 来获取第 n 个线段的第 i 个中枢）
 
-`cal` 方法实现的就是将计算出来的买卖点类 `CBS_Point` 加入到 `self.lst: List[CBS_Point]` 中；
+`cal` 方法实现的就是将计算出来的买卖点类 `CBSPoint` 加入到 `self.lst: List[CBS_Point]` 中；
 
 ### cbsp 买卖点策略
 本框架支持方便地开发用户自己买卖点策略，比如一买底分型确定时买入这种；

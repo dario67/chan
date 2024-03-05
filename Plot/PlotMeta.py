@@ -1,7 +1,7 @@
 from typing import List
 
 from Bi.Bi import CBi
-from BuySellPoint.BS_Point import CBS_Point
+from BuySellPoint.BS_Point import CBSPoint
 from Common.CEnum import FX_TYPE
 from KLine.KLine import CKLine
 from KLine.KLine_List import CKLine_List
@@ -9,6 +9,8 @@ from Seg.Eigen import CEigen
 from Seg.EigenFX import CEigenFX
 from Seg.Seg import CSeg
 from ZS.ZS import CZS
+
+# 图元数据
 
 
 class Cklc_meta:
@@ -101,7 +103,7 @@ class CZS_meta:
 
 
 class CBS_Point_meta:
-    def __init__(self, bsp: CBS_Point, is_seg):
+    def __init__(self, bsp: CBSPoint, is_seg):
         self.is_buy = bsp.is_buy
         self.type = bsp.type2str()
         self.is_seg = is_seg

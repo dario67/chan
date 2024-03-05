@@ -1,6 +1,6 @@
 import os
 
-from Common.CEnum import DATA_FIELD, KL_TYPE
+from Common.CEnum import DataField, KL_TYPE
 from Common.ChanException import CChanException, ErrCode
 from Common.CTime import CTime
 from Common.func_util import str2float
@@ -11,7 +11,7 @@ from .CommonStockAPI import CCommonStockApi
 
 def create_item_dict(data, column_name):
     for i in range(len(data)):
-        data[i] = parse_time_column(data[i]) if column_name[i] == DATA_FIELD.FIELD_TIME else str2float(data[i])
+        data[i] = parse_time_column(data[i]) if column_name[i] == DataField.FIELD_TIME else str2float(data[i])
     return dict(zip(column_name, data))
 
 
@@ -44,16 +44,16 @@ class CSV_API(CCommonStockApi):
     def __init__(self, code, k_type=KL_TYPE.K_DAY, begin_date=None, end_date=None, autype=None):
         self.headers_exist = True  # 第一行是否是标题，如果是数据，设置为False
         self.columns = [
-            DATA_FIELD.FIELD_TIME,
-            DATA_FIELD.FIELD_OPEN,
-            DATA_FIELD.FIELD_HIGH,
-            DATA_FIELD.FIELD_LOW,
-            DATA_FIELD.FIELD_CLOSE,
-            # DATA_FIELD.FIELD_VOLUME,
-            # DATA_FIELD.FIELD_TURNOVER,
-            # DATA_FIELD.FIELD_TURNRATE,
+            DataField.FIELD_TIME,
+            DataField.FIELD_OPEN,
+            DataField.FIELD_HIGH,
+            DataField.FIELD_LOW,
+            DataField.FIELD_CLOSE,
+            # DataField.FIELD_VOLUME,
+            # DataField.FIELD_TURNOVER,
+            # DataField.FIELD_TURNRATE,
         ]  # 每一列字段
-        self.time_column_idx = self.columns.index(DATA_FIELD.FIELD_TIME)
+        self.time_column_idx = self.columns.index(DataField.FIELD_TIME)
         super(CSV_API, self).__init__(code, k_type, begin_date, end_date, autype)
 
     def get_kl_data(self):

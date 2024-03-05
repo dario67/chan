@@ -83,6 +83,12 @@ class CZSList:
         return CZS(lst, is_sure=is_sure) if min_high > max_low else None
 
     def cal_bi_zs(self, bi_lst: Union[CBiList, CSegListComm], seg_lst: CSegListComm):
+        """
+        中枢需要跨段的话要修改一下
+        :param bi_lst:
+        :param seg_lst:
+        :return:
+        """
         while self.zs_lst and self.zs_lst[-1].begin_bi.idx >= self.last_sure_pos:
             self.zs_lst.pop()
         if self.config.zs_algo == "normal":

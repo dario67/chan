@@ -7,9 +7,14 @@ if __name__ == "__main__":
     一个极其弱智的策略，只交易一类买卖点，底分型形成后就开仓，直到一类卖点顶分型形成后平仓
     只用做展示如何自己实现策略，做回测用~
     """
-    code = "sz.000001"
-    begin_time = "2021-01-01"
-    end_time = None
+    # code = "sz.000001"
+    # begin_time = "2021-01-01"
+    # end_time = None
+
+    code = "sz.000333"
+    begin_time = "2022-01-01"
+    end_time = "2023-12-01"
+
     data_src = DATA_SRC.BAO_STOCK
     lv_list = [KL_TYPE.K_DAY]
 

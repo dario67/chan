@@ -33,19 +33,20 @@ def get_seglist_instance(seg_config: CSegConfig, lv) -> CSegListComm:
 
 
 class CKLine_List:
+    # 元素管理，所有元素取值的入口
     def __init__(self, kl_type, conf: CChanConfig):
         self.kl_type = kl_type
         self.config = conf
         self.lst: List[CKLine] = []  # K线列表，可递归  元素KLine类型
-        self.bi_list = CBiList(bi_conf=conf.bi_conf)
-        self.seg_list: CSegListComm[CBi] = get_seglist_instance(seg_config=conf.seg_conf, lv=SEG_TYPE.BI)
-        self.segseg_list: CSegListComm[CSeg[CBi]] = get_seglist_instance(seg_config=conf.seg_conf, lv=SEG_TYPE.SEG)
+        self.bi_list = CBiList(bi_conf=conf.bi_conf)  # CBiList 类，管理所有的笔
+        self.seg_list: CSegListComm[CBi] = get_seglist_instance(seg_config=conf.seg_conf, lv=SEG_TYPE.BI)  # CSegListComm 类，管理所有的线段
+        self.segseg_list: CSegListComm[CSeg[CBi]] = get_seglist_instance(seg_config=conf.seg_conf, lv=SEG_TYPE.SEG)  # 线段的线段
 
-        self.zs_list = CZSList(zs_config=conf.zs_conf)
-        self.segzs_list = CZSList(zs_config=conf.zs_conf)
+        self.zs_list = CZSList(zs_config=conf.zs_conf)  # CZSList 类，管理所有的中枢
+        self.segzs_list = CZSList(zs_config=conf.zs_conf)  # 线段中枢
 
-        self.bs_point_lst = CBSPointList[CBi, CBiList](bs_point_config=conf.bs_point_conf)
-        self.seg_bs_point_lst = CBSPointList[CSeg, CSegListComm](bs_point_config=conf.seg_bs_point_conf)
+        self.bs_point_lst = CBSPointList[CBi, CBiList](bs_point_config=conf.bs_point_conf)  # CBSPointList 类，管理所有的买卖点
+        self.seg_bs_point_lst = CBSPointList[CSeg, CSegListComm](bs_point_config=conf.seg_bs_point_conf)  # 线段买卖点
 
         self.metric_model_lst = conf.GetMetricModel()
 
