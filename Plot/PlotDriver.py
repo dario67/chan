@@ -194,8 +194,10 @@ class CPlotDriver:
             self.DrawElement(plot_config[lv], meta, ax, lv, plot_para, ax_macd, x_limits)
 
             if lv != self.lv_lst[-1]:
-                sseg_begin = meta.sub_last_kseg_start_idx(slv_seg_cnt)
-                sbi_begin = meta.sub_last_kbi_start_idx(slv_bi_cnt)
+                if slv_seg_cnt is not None:
+                    sseg_begin = meta.sub_last_kseg_start_idx(slv_seg_cnt)
+                if slv_bi_cnt is not None:
+                    sbi_begin = meta.sub_last_kbi_start_idx(slv_bi_cnt)
                 if x_range != 0:
                     srange_begin = meta.sub_range_start_idx(x_range)
 
@@ -537,12 +539,12 @@ class CPlotDriver:
         assert macd_lst[0] is not None, "you can't draw macd until you delete macd_metric=False"
 
         x_begin = x_limits[0]
-        x_idx = range(len(macd_lst))
-        dif_line = [macd.DIF for macd in macd_lst]
-        dea_line = [macd.DEA for macd in macd_lst]
-        macd_bar = [macd.macd for macd in macd_lst]
-        y_min = min([min(dif_line[x_begin:]), min(dea_line[x_begin:]), min(macd_bar[x_begin:])])
-        y_max = max([max(dif_line[x_begin:]), max(dea_line[x_begin:]), max(macd_bar[x_begin:])])
+        x_idx = range(len(macd_lst))[x_begin:]
+        dif_line = [macd.DIF for macd in macd_lst[x_begin:]]
+        dea_line = [macd.DEA for macd in macd_lst[x_begin:]]
+        macd_bar = [macd.macd for macd in macd_lst[x_begin:]]
+        y_min = min([min(dif_line), min(dea_line), min(macd_bar)])
+        y_max = max([max(dif_line), max(dea_line), max(macd_bar)])
         ax.plot(x_idx, dif_line, "#FFA500")
         ax.plot(x_idx, dea_line, "#0000ff")
         _bar = ax.bar(x_idx, macd_bar, color="r", width=width)

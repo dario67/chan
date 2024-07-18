@@ -79,6 +79,8 @@ class CBiList:
             self.bi_list.append(_tmp_last_bi)
             return False
         else:
+            if for_virtual:
+                self.bi_list[-1].append_sure_end(_tmp_last_bi.end_klc)
             return True
 
     def update_bi_sure(self, klc: CKLine) -> bool:
@@ -102,11 +104,18 @@ class CBiList:
 
     def delete_virtual_bi(self):
         if len(self) > 0 and not self.bi_list[-1].is_sure:
-            if self.bi_list[-1].is_virtual_end():
-                self.bi_list[-1].restore_from_virtual_end()
+            sure_end_list = [klc for klc in self.bi_list[-1].sure_end]
+            if len(sure_end_list):
+                self.bi_list[-1].restore_from_virtual_end(sure_end_list[0])
+                self.last_end = self[-1].end_klc
+                for sure_end in sure_end_list[1:]:
+                    self.add_new_bi(self.last_end, sure_end, is_sure=True)
+                    self.last_end = self[-1].end_klc
             else:
                 del self.bi_list[-1]
         self.last_end = self[-1].end_klc if len(self) > 0 else None
+        if len(self) > 0:
+            self[-1].next = None
 
     def try_add_virtual_bi(self, klc: CKLine, need_del_end=False):
         if need_del_end:

@@ -1,5 +1,6 @@
 import importlib
 import json
+import time
 
 from Chan import CChan
 from ChanConfig import CChanConfig
@@ -43,6 +44,12 @@ plot_para = {
         # },
     }
 }
+
+
+def write_file(file_name, context, mode='w'):
+    f = open(file_name, mode)
+    f.write(context)
+    f.close()
 
 
 class Backtest:
@@ -96,12 +103,14 @@ class Backtest:
 
     def _analyze_backtest_result(self, result):
         # 分析回测结果的逻辑，生成回测报告
-        print(self.config['code'], json.dumps(result, ensure_ascii=False))
+        result['code'] = self.config['code']
+        print(json.dumps(result, ensure_ascii=False))
+        write_file(f"/Users/paopao/backtext.txt", json.dumps(result, ensure_ascii=False) + '\n', mode='a')
 
 
-if __name__ == "__main__":
+def run_one(code):
     backtest_conf = {
-        "code": "sz.002707",
+        "code": f"sz.{code}",
         "begin_time": "2021-01-18",
         "end_time": "2024-03-04",
         "data_src": DATA_SRC.BAO_STOCK,
@@ -113,9 +122,21 @@ if __name__ == "__main__":
         }),
         'strategy': 'Eg',
     }
+    try:
+        b = Backtest(backtest_conf)
+        b.run_backtest()
+    except Exception as e:
+        return
 
-    b = Backtest(backtest_conf)
-    b.run_backtest()
+
+if __name__ == "__main__":
+    # run_one('300671')
+
+    for line in open('/Users/paopao/PycharmProjects/chan/sz.txt', 'r'):
+        code = line.strip()
+        print(code)
+        run_one(code)
+        time.sleep(0.5)
 
     # exit(0)
 

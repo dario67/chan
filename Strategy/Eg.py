@@ -22,8 +22,8 @@ class Eg:
         if not bsp_list:  # 为空
             return False
         last_bsp = bsp_list[-1]  # 最后一个买卖点
-        if BSP_TYPE.T1 not in last_bsp.type and BSP_TYPE.T1P not in last_bsp.type:  # 假如只做1类买卖点
-            return False
+        # if BSP_TYPE.T1 not in last_bsp.type and BSP_TYPE.T1P not in last_bsp.type:  # 假如只做1类买卖点
+        #     return False
 
         cur_lv_chan = chan[0]
         if cur_lv_chan[-2].fx == FX_TYPE.BOTTOM and last_bsp.is_buy and not self.is_hold:  # 底分型形成后开仓
