@@ -10,6 +10,7 @@ def kltype_lte_day(_type):
 
 
 def check_kltype_order(type_list: list):
+    # TODO 这个实现可以改一下
     _dict = {
         KL_TYPE.K_1M: 1,
         KL_TYPE.K_3M: 2,

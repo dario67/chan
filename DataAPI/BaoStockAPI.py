@@ -39,7 +39,7 @@ def parse_time_column(inp):
     return CTime(year, month, day, hour, minute)
 
 
-def GetColumnNameFromFieldList(fileds: str):
+def get_column_name_from_field_list(fileds: str):
     _dict = {
         "time": DataField.FIELD_TIME,
         "date": DataField.FIELD_TIME,
@@ -80,7 +80,7 @@ class CBaoStock(CCommonStockApi):
         if rs.error_code != '0':
             raise Exception(rs.error_msg)
         while rs.error_code == '0' and rs.next():
-            yield CKLine_Unit(create_item_dict(rs.get_row_data(), GetColumnNameFromFieldList(fields)))
+            yield CKLine_Unit(create_item_dict(rs.get_row_data(), get_column_name_from_field_list(fields)))
 
     def SetBasciInfo(self):
         rs = bs.query_stock_basic(code=self.code)

@@ -29,7 +29,7 @@ def get_seglist_instance(seg_config: CSegConfig, lv) -> CSegListComm:
         from Seg.SegListDef import CSegListDef
         return CSegListDef(seg_config, lv)
     else:
-        raise CChanException(f"unsupport seg algoright:{seg_config.seg_algo}", ErrCode.PARA_ERROR)
+        raise CChanException(f"unsupported seg algoright:{seg_config.seg_algo}", ErrCode.PARA_ERROR)
 
 
 class CKLine_List:

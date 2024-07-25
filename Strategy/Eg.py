@@ -49,7 +49,6 @@ class Eg:
         return False
 
     def get_result(self):
-
         return {
             'cash': self.cash,
             'hold_quantity': self.hold_quantity,

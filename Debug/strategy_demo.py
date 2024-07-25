@@ -12,10 +12,11 @@ if __name__ == "__main__":
     # end_time = None
 
     code = "sz.000333"
+    # code = "sz.002881"
     begin_time = "2022-01-01"
-    end_time = "2023-12-01"
+    end_time = "2024-07-01"
 
-    data_src = DATA_SRC.BAO_STOCK
+    data_src = DATA_SRC.BAO_STOCK  # TODO 增加富途数据来源
     lv_list = [KL_TYPE.K_DAY]
 
     config = CChanConfig({
@@ -41,8 +42,8 @@ if __name__ == "__main__":
         if not bsp_list:  # 为空
             continue
         last_bsp = bsp_list[-1]  # 最后一个买卖点
-        if BSP_TYPE.T1 not in last_bsp.type and BSP_TYPE.T1P not in last_bsp.type:  # 假如只做1类买卖点
-            continue
+        # if BSP_TYPE.T1 not in last_bsp.type and BSP_TYPE.T1P not in last_bsp.type:  # 假如只做1类买卖点
+        #     continue
         cur_lv_chan = chan_snapshot[0]
         if last_bsp.klu.klc.idx != cur_lv_chan[-2].idx:
             continue

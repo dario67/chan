@@ -1,10 +1,12 @@
 import importlib
 import json
+import os
 import time
 
 from Chan import CChan
 from ChanConfig import CChanConfig
 from Common.CEnum import AUTYPE, BSP_TYPE, DATA_SRC, FX_TYPE, KL_TYPE
+from Common.constants import WORK_DIR
 from Plot.PlotDriver import CPlotDriver
 
 plot_config = {
@@ -61,6 +63,8 @@ class Backtest:
         strategy_name = self.config.get('strategy')
         strategy_class = self._get_strategy_class(strategy_name)
 
+        print(f"开始回测 {self.config['code']} {self.config['lv_list']} 策略：{strategy_name}")
+
         chan = CChan(
             code=self.config['code'],
             begin_time=self.config['begin_time'],
@@ -111,10 +115,10 @@ class Backtest:
 def run_one(code):
     backtest_conf = {
         "code": f"sz.{code}",
-        "begin_time": "2021-01-18",
-        "end_time": "2024-03-04",
+        "begin_time": "2022-01-18",
+        "end_time": "2024-07-04",
         "data_src": DATA_SRC.BAO_STOCK,
-        "lv_list": [KL_TYPE.K_30M],
+        "lv_list": [KL_TYPE.K_60M],
         "config": CChanConfig({
             "trigger_step": True,  # 打开开关！
             "divergence_rate": 0.8,
@@ -132,7 +136,7 @@ def run_one(code):
 if __name__ == "__main__":
     # run_one('300671')
 
-    for line in open('/Users/paopao/PycharmProjects/chan/sz.txt', 'r'):
+    for line in open(f'{WORK_DIR}/sz.txt', 'r'):
         code = line.strip()
         print(code)
         run_one(code)
