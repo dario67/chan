@@ -131,11 +131,8 @@ class CChan:
         api_instance = stockapi_cls(code=self.code, k_type=lv, begin_date=self.begin_time, end_date=self.end_time, autype=self.autype)
         return self.load_klus(api_instance, lv)
 
-    def add_lv_iter(self, lv_idx, iter):
-        if isinstance(lv_idx, int):
-            self.g_kl_iter[self.lv_list[lv_idx]].append(iter)
-        else:
-            self.g_kl_iter[lv_idx].append(iter)
+    def add_lv_iter(self, lv_name, iter):
+        self.g_kl_iter[lv_name].append(iter)
 
     def get_next_lv_klu(self, lv_name):
         iter_list = self.g_kl_iter[lv_name]
@@ -222,7 +219,7 @@ class CChan:
         try:
             stockapi_cls.do_init()
             for lv_idx, klu_iter in enumerate(self.get_klu_iters(stockapi_cls)):
-                self.add_lv_iter(lv_idx, klu_iter)
+                self.add_lv_iter(self.lv_list[lv_idx], klu_iter)
             self.klu_cache: List[Optional[CKLine_Unit]] = [None] * len(self.lv_list)
             self.klu_last_t = [CTime(1980, 1, 1, 0, 0)] * len(self.lv_list)
 
@@ -262,7 +259,7 @@ class CChan:
     def load_iterator(self, lv_idx, parent_klu, step):
         # K线时间天级别以下描述的是结束时间，如60M线，每天第一根是10点30的
         # 天以上是当天日期
-        cur_lv = self.lv_list[lv_idx]
+        lv_name = self.lv_list[lv_idx]
         while True:
             if self.klu_cache[lv_idx]:
                 kline_unit = self.klu_cache[lv_idx]
@@ -270,7 +267,7 @@ class CChan:
                 self.klu_cache[lv_idx] = None
             else:
                 try:
-                    kline_unit = self.get_next_lv_klu(cur_lv)
+                    kline_unit = self.get_next_lv_klu(lv_name)
                     self.try_set_klu_idx(lv_idx, kline_unit)
                     if not kline_unit.time > self.klu_last_t[lv_idx]:
                         raise CChanException(f"kline time err, cur={kline_unit.time}, last={self.klu_last_t[lv_idx]}", ErrCode.KL_NOT_MONOTONOUS)
@@ -281,9 +278,9 @@ class CChan:
             if parent_klu and kline_unit.time > parent_klu.time:
                 self.klu_cache[lv_idx] = kline_unit
                 break
-            self.add_new_kl(cur_lv, kline_unit)
+            self.add_new_kl(lv_name, kline_unit)
             if parent_klu:
-                self.set_klu_parent_relation(parent_klu, kline_unit, cur_lv, lv_idx)
+                self.set_klu_parent_relation(parent_klu, kline_unit, lv_name, lv_idx)
             if lv_idx != len(self.lv_list)-1:
                 for _ in self.load_iterator(lv_idx+1, kline_unit, step):
                     ...
