@@ -14,6 +14,7 @@ class BOLL_Metric:
 
 
 class BollModel:
+    # 计算并更新布林带（Bollinger Bands）指标。
     def __init__(self, N=20):
         assert N > 1
         self.N = N

@@ -115,8 +115,8 @@ class Backtest:
 def run_one(code):
     backtest_conf = {
         "code": f"sz.{code}",
-        "begin_time": "2022-01-18",
-        "end_time": "2024-07-04",
+        "begin_time": "2022-07-24",
+        "end_time": "2024-07-24",
         "data_src": DATA_SRC.BAO_STOCK,
         "lv_list": [KL_TYPE.K_60M],
         "config": CChanConfig({

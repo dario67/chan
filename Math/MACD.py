@@ -11,6 +11,7 @@ class CMACD_item:
 
 
 class CMACD:
+    # 计算和存储指数平滑移动平均线（EMA）和移动平均收敛散度（MACD）指标。
     def __init__(self, fastperiod=12, slowperiod=26, signalperiod=9):
         self.macd_info: List[CMACD_item] = []
         self.fastperiod = fastperiod

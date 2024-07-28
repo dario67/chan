@@ -5,7 +5,7 @@ from Common.func_util import has_overlap
 from KLine.KLine_Unit import CKLine_Unit
 
 
-# 合并后的K线
+# 合并后的K线， CKLine 类继承自泛型类 CKLineCombiner，且该泛型类使用 CKLine_Unit 作为其类型参数
 class CKLine(CKLineCombiner[CKLine_Unit]):
     def __init__(self, kl_unit: CKLine_Unit, idx, _dir=KLINE_DIR.UP):
         super(CKLine, self).__init__(kl_unit, _dir)

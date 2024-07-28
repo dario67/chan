@@ -6,6 +6,7 @@ class KDJ_Item:
 
 
 class KDJ:
+    # KDJ 指标是用来衡量市场动量的一种技术指标，通常用于识别市场的超买或超卖情况。它通过随机指标 K、D 和 J 值来表征市场趋势。
     def __init__(self, period: int = 9):
         super(KDJ, self).__init__()
         self.arr = []

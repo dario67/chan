@@ -131,6 +131,7 @@ class CKLine_Unit:
         return self.high
 
     def set_metric(self, metric_model_lst: list) -> None:
+        # 设置和更新一系列与金融市场交易相关的技术指标模型
         for metric_model in metric_model_lst:
             if isinstance(metric_model, CMACD):
                 self.macd: CMACD_item = metric_model.add(self.close)

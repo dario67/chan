@@ -135,6 +135,7 @@ class CDemarkEngine:
     SETUP_CMP2CLOSE = True
     COUNTDOWN_CMP2CLOSE = True
 
+    # 基于 DeMark 指标结构的一种技术分析工具，用于预测股票市场的趋势和价格反转点
     def __init__(
         self,
         demark_len=9,

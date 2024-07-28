@@ -3,6 +3,7 @@ from Common.ChanException import CChanException, ErrCode
 
 
 class CTrendModel:
+    # 计算并更新趋势指标。
     def __init__(self, trend_type: TREND_TYPE, T: int):
         self.T = T
         self.arr = []

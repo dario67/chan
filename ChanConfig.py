@@ -66,7 +66,7 @@ class CChanConfig:
         # 打印K线不一致的明细，默认为 True
         self.print_warning = conf.get("print_warning", True)
         # 计算发生错误时打印因为什么时间的K线数据导致的，默认为 False
-        self.print_err_time = conf.get("print_err_time", False)
+        # self.print_err_time = conf.get("print_err_time", False)
 
         # 均线计算周期（用于生成特征及绘图时使用），默认为空[] 例子：[5,20]
         self.mean_metrics: List[int] = conf.get("mean_metrics", [])

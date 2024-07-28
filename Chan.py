@@ -76,7 +76,7 @@ class CChan:
         self.kl_misalign_cnt = 0
         self.kl_inconsistent_detail = defaultdict(list)
 
-        self.g_kl_iters = defaultdict(list)  # key是K线级别，value是对应级别的K Line Unit 的迭代器
+        self.g_kl_iters = defaultdict()  # key是K线级别，value是对应级别的K Line Unit 的迭代器
 
         self.kl_datas: Dict[KL_TYPE, CKLine_List] = {}
         self.do_init()
@@ -120,9 +120,6 @@ class CChan:
         for kl_type in self.lv_list:
             self.kl_datas[kl_type] = CKLine_List(kl_type, conf=self.conf)
 
-    # def lv_name(self, lv_idx):
-    #     return self.lv_list[lv_idx]
-
     @staticmethod
     def load_klus(stockapi_instance: CCommonStockApi, lv) -> Iterable[CKLine_Unit]:
         for klu_idx, klu in enumerate(stockapi_instance.get_kl_data()):
@@ -135,17 +132,7 @@ class CChan:
         return self.load_klus(api_instance, lv)
 
     def add_lv_iter(self, lv_name, lv_iter):
-        print(f'add lv_name iter {lv_name}')
-        self.g_kl_iters[lv_name].append(lv_iter)
-
-    def get_next_lv_klu(self, lv_name):
-        lv_iter = self.g_kl_iters[lv_name]
-        while lv_iter:
-            try:
-                return next(lv_iter[0])
-            except StopIteration:
-                lv_iter.pop(0)
-        raise StopIteration
+        self.g_kl_iters[lv_name] = lv_iter
 
     def step_load(self):
         print(f'start step_load ')
@@ -167,13 +154,13 @@ class CChan:
             self.klu_cache: List[Optional[CKLine_Unit]] = [None for _ in self.lv_list]
         if not hasattr(self, 'klu_last_t'):
             self.klu_last_t = [CTime(1980, 1, 1, 0, 0) for _ in self.lv_list]
-        for lv_idx, lv in enumerate(self.lv_list):
-            if lv not in inp:
+        for lv_idx, lv_name in enumerate(self.lv_list):
+            if lv_name not in inp:
                 if lv_idx == 0:
-                    raise CChanException(f"最高级别{lv}没有传入数据", ErrCode.NO_DATA)
+                    raise CChanException(f"最高级别{lv_name}没有传入数据", ErrCode.NO_DATA)
                 continue
-            assert isinstance(inp[lv], list)
-            self.add_lv_iter(lv, iter(inp[lv]))
+            assert isinstance(inp[lv_name], list)
+            self.add_lv_iter(lv_name, iter(inp[lv_name]))
         for _ in self.load_iterator(lv_idx=0, parent_klu=None, step=False):
             ...
         if not self.conf.trigger_step:  # 非回放模式全部算完之后才算一次中枢和线段
@@ -249,8 +236,7 @@ class CChan:
         try:
             self.kl_datas[lv_name].add_single_klu(klu)
         except Exception:
-            if self.conf.print_err_time:
-                print(f"[ERROR-{self.code}]在计算{klu.time}K线时发生错误!")
+            print(f"[ERROR-{self.code}]在计算{klu.time}K线时发生错误!")
             raise
 
     def try_set_klu_idx(self, lv_idx: int, kline_unit: CKLine_Unit):
@@ -264,6 +250,7 @@ class CChan:
     def load_iterator(self, lv_idx, parent_klu, step):
         # 递归解析 KLine Unit
         # K线时间天级别以下描述的是结束时间，如60M线，每天第一根是10点30的。天以上是当天日期
+        # print(f'lv_idx {lv_idx}')
         lv_name = self.lv_list[lv_idx]
         while True:
             if self.klu_cache[lv_idx]:
@@ -271,18 +258,18 @@ class CChan:
                 assert klu is not None
                 self.klu_cache[lv_idx] = None
             else:
-                try:
-                    klu = self.get_next_lv_klu(lv_name)
-                    self.try_set_klu_idx(lv_idx, klu)
-                    if not klu.time > self.klu_last_t[lv_idx]:
-                        raise CChanException(f"kline time err, cur={klu.time}, last={self.klu_last_t[lv_idx]}", ErrCode.KL_NOT_MONOTONOUS)
-                    self.klu_last_t[lv_idx] = klu.time
-                except StopIteration:
+                klu = next(self.g_kl_iters[lv_name], StopIteration)
+                if klu == StopIteration:
                     break
+                self.try_set_klu_idx(lv_idx, klu)
+                if not klu.time > self.klu_last_t[lv_idx]:
+                    raise CChanException(f"klu time err, cur={klu.time}, last={self.klu_last_t[lv_idx]}", ErrCode.KL_NOT_MONOTONOUS)
+                self.klu_last_t[lv_idx] = klu.time
 
             if parent_klu and klu.time > parent_klu.time:
                 self.klu_cache[lv_idx] = klu
                 break
+
             self.add_new_kl(lv_name, klu)
             if parent_klu:
                 self.set_klu_parent_relation(parent_klu, klu, lv_idx)

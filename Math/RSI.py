@@ -1,4 +1,5 @@
 class RSI:
+    # RSI（相对强弱指数）是一种衡量证券或股票在特定时期内价格变动的速度和变化量的技术分析指标，通常用于识别超买或超卖的条件。
     def __init__(self, period: int = 14):
         super(RSI, self).__init__()
         self.close_arr = []
