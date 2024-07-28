@@ -21,7 +21,7 @@ class CKLine(CKLineCombiner[CKLine_Unit]):
             fx_token = "_"
         return f"{self.idx}th{fx_token}:{self.time_begin}~{self.time_end}({self.kl_type}|{len(self.lst)}) low={self.low} high={self.high}"
 
-    def GetSubKLC(self):
+    def get_sub_klc(self):
         # 可能会出现相邻的两个KLC的子KLC会有重复
         # 因为子KLU合并时正好跨过了父KLC的结束时间边界
         last_klc = None

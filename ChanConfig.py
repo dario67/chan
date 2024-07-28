@@ -114,7 +114,7 @@ class CChanConfig:
 
         conf.check()
 
-    def GetMetricModel(self):
+    def get_metric_model(self):
         res: List[CMACD | CTrendModel | BollModel | CDemarkEngine | RSI | KDJ] = [
             CMACD(
                 fastperiod=self.macd_config['fast'],

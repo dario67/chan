@@ -28,8 +28,7 @@ def get_seglist_instance(seg_config: CSegConfig, lv) -> CSegListComm:
         print(f'Please avoid using seg_algo={seg_config.seg_algo} as it is deprecated and no longer maintained.')
         from Seg.SegListDef import CSegListDef
         return CSegListDef(seg_config, lv)
-    else:
-        raise CChanException(f"unsupported seg algoright:{seg_config.seg_algo}", ErrCode.PARA_ERROR)
+    raise CChanException(f"unsupported seg algoright:{seg_config.seg_algo}", ErrCode.PARA_ERROR)
 
 
 class CKLine_List:
@@ -48,7 +47,7 @@ class CKLine_List:
         self.bs_point_lst = CBSPointList[CBi, CBiList](bs_point_config=conf.bs_point_conf)  # CBSPointList 类，管理所有的买卖点
         self.seg_bs_point_lst = CBSPointList[CSeg, CSegListComm](bs_point_config=conf.seg_bs_point_conf)  # 线段买卖点
 
-        self.metric_model_lst = conf.GetMetricModel()
+        self.metric_model_lst = conf.get_metric_model()
 
         self.step_calculation = self.need_cal_step_by_step()
 
@@ -147,7 +146,7 @@ def cal_seg(bi_list, seg_list):
 
 def update_zs_in_seg(bi_list, seg_list, zs_list):
     sure_seg_cnt = 0
-    for seg in seg_list[::-1]:
+    for seg in seg_list[::-1]:  # 反向迭代，从最后一个开始操作
         if seg.ele_inside_is_sure:
             break
         if seg.is_sure:
@@ -159,11 +158,10 @@ def update_zs_in_seg(bi_list, seg_list, zs_list):
             if zs.is_inside(seg):
                 seg.add_zs(zs)
             assert zs.begin_bi.idx > 0
-            zs.set_bi_in(bi_list[zs.begin_bi.idx-1])
+            zs.set_bi_in(bi_list[zs.begin_bi.idx-1])  # bi_in 属性为 zs 开始索引前一个 bi 对象。
             if zs.end_bi.idx+1 < len(bi_list):
                 zs.set_bi_out(bi_list[zs.end_bi.idx+1])
-            zs.set_bi_lst(list(bi_list[zs.begin_bi.idx:zs.end_bi.idx+1]))
+            zs.set_bi_lst(list(bi_list[zs.begin_bi.idx:zs.end_bi.idx+1]))  # bi_lst 属性为从 zs 开始索引到结束索引的 bi 对象的列表。
 
         if sure_seg_cnt > 2:
-            if not seg.ele_inside_is_sure:
-                seg.ele_inside_is_sure = True
+            seg.ele_inside_is_sure = True

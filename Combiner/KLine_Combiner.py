@@ -132,6 +132,7 @@ class CKLineCombiner(Generic[T]):
         raise CChanException("can't find peak...", ErrCode.COMBINER_ERR)
 
     def update_fx(self, _pre: Self, _next: Self, exclude_included=False, allow_top_equal=None):
+        # 更新分型
         # allow_top_equal = None普通模式
         # allow_top_equal = 1 被包含，顶部相等不合并
         # allow_top_equal = -1 被包含，底部相等不合并
