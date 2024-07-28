@@ -1230,33 +1230,37 @@ class CCustomStrategy(CStrategy):
 
 #### 区间套策略示例
 在 `CStrategy` 这个框架下就很容易实现区间套的策略：因为 `CChan` 里面包含了所有级别的数据，所以利用 `chan[lv+1]` 就可以得到次级别的买卖点数据，而每根次级别K线也可以通过 `self.sup_kl` 获得其对应的父级别 klu 变量，所以区间套策略可以用下面 20 行左右代码实现：
+
 ```python
 def try_open(self, chan: CChan, lv) -> Optional[CCustomBSP]:
-    data = chan[lv]
-    if lv != len(chan.lv_list)-1 and data.bi_list:  # 当前级别不是最低级别，且至少有一笔
-        if qjt_bsp := self.cal_qjt_bsp(data, chan[lv + 1]):  # 计算区间套
-            return qjt_bsp
+  data = chan[lv]
+  if lv != len(chan.lv_list) - 1 and data.bi_list:  # 当前级别不是最低级别，且至少有一笔
+    if qjt_bsp := self.cal_qjt_bsp(data, chan[lv + 1]):  # 计算区间套
+      return qjt_bsp
+
 
 def cal_qjt_bsp(self, data: CKLine_List, sub_lv_data: CKLine_List) -> Optional[CCustomBSP]:
-    last_klu = data[-1][-1]
-    last_bsp_lst = data.bs_point_lst.getLastestBspList()
-    if len(last_bsp_lst) == 0:
-        return None
-    last_bsp = last_bsp_lst[0]
-    if last_bsp.klu.idx != last_klu.idx:  # 当前K线是父级别的买卖点
-        return None
-    for sub_bsp in sub_lv_data.cbsp_strategy:  # 对于次级别的买卖点
-        if sub_bsp.klu.sup_kl.idx == last_klu.idx and \  # 如果是父级别K线下的次级别K线
-           sub_bsp.type2str().find("1") >= 0:  # 且是一类买卖点
-           return CCustomBSP(
-                bsp=last_bsp,
-                klu=last_klu,
-                bs_type=last_bsp.qjt_type(),  # 返回区间套买卖点
-                is_buy=last_bsp.is_buy,
-                target_klc=sub_bsp.target_klc[-1].sup_kl.klc,
-                price=sub_bsp.open_price,
-            )
+  last_klu = data[-1][-1]
+  last_bsp_lst = data.bs_point_lst.get_lastest_bsp_list()
+  if len(last_bsp_lst) == 0:
     return None
+  last_bsp = last_bsp_lst[0]
+  if last_bsp.klu.idx != last_klu.idx:  # 当前K线是父级别的买卖点
+    return None
+  for sub_bsp in sub_lv_data.cbsp_strategy:  # 对于次级别的买卖点
+    if sub_bsp.klu.sup_kl.idx == last_klu.idx and \  # 如果是父级别K线下的次级别K线
+    sub_bsp.type2str().find("1") >= 0:  # 且是一类买卖点
+    return CCustomBSP(
+      bsp=last_bsp,
+      klu=last_klu,
+      bs_type=last_bsp.qjt_type(),  # 返回区间套买卖点
+      is_buy=last_bsp.is_buy,
+      target_klc=sub_bsp.target_klc[-1].sup_kl.klc,
+      price=sub_bsp.open_price,
+    )
+
+
+return None
 ```
 
 下图中次级别是父级别绿线部分的走势，可以看得出来次级别已经逐渐背驰了，所以在最后一个背驰点产生了父级别的买卖点：

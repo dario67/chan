@@ -76,7 +76,7 @@ class CChan:
         self.kl_misalign_cnt = 0
         self.kl_inconsistent_detail = defaultdict(list)
 
-        self.g_kl_iter = defaultdict(list)  # key是K线级别，value是对应级别的K Line Unit 的迭代器
+        self.g_kl_iters = defaultdict(list)  # key是K线级别，value是对应级别的K Line Unit 的迭代器
 
         self.kl_datas: Dict[KL_TYPE, CKLine_List] = {}
         self.do_init()
@@ -98,7 +98,7 @@ class CChan:
         obj.conf = copy.deepcopy(self.conf, memo)
         obj.kl_misalign_cnt = self.kl_misalign_cnt
         obj.kl_inconsistent_detail = copy.deepcopy(self.kl_inconsistent_detail, memo)
-        obj.g_kl_iter = copy.deepcopy(self.g_kl_iter, memo)
+        obj.g_kl_iters = copy.deepcopy(self.g_kl_iters, memo)
         if hasattr(self, 'klu_cache'):
             obj.klu_cache = copy.deepcopy(self.klu_cache, memo)
         if hasattr(self, 'klu_last_t'):
@@ -135,10 +135,11 @@ class CChan:
         return self.load_klus(api_instance, lv)
 
     def add_lv_iter(self, lv_name, lv_iter):
-        self.g_kl_iter[lv_name].append(lv_iter)
+        print(f'add lv_name iter {lv_name}')
+        self.g_kl_iters[lv_name].append(lv_iter)
 
     def get_next_lv_klu(self, lv_name):
-        lv_iter = self.g_kl_iter[lv_name]
+        lv_iter = self.g_kl_iters[lv_name]
         while lv_iter:
             try:
                 return next(lv_iter[0])

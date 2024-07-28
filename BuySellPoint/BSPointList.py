@@ -301,7 +301,7 @@ class CBSPointList(Generic[LINE_TYPE, LINE_LIST_TYPE]):
             self.add_bs(bs_type=BSP_TYPE.T3B, bi=bsp3_bi, relate_bsp1=real_bsp1)  # type: ignore
             break
 
-    def getLastestBspList(self) -> List[CBSPoint[LINE_TYPE]]:
+    def get_lastest_bsp_list(self) -> List[CBSPoint[LINE_TYPE]]:
         if len(self.lst) == 0:
             return []
         return sorted(self.lst, key=lambda bsp: bsp.bi.idx, reverse=True)
